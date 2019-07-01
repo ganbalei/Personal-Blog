@@ -1,7 +1,10 @@
 from django.shortcuts import render, get_object_or_404, render_to_response
 from .models import *
 from read_record.utils import read_record_read
+from comment.models import Comment
+from comment.forms import CommentForm
 from django.core.paginator import Paginator
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Count
 # Create your views here.
@@ -30,14 +33,6 @@ def get_blog_list_common_data(request, blogs):
         if page_range[-1] != paginator.num_pages:
             page_range.append(paginator.num_pages)
 
-    '''#博客分类对应的博客数量
-    1)BlogType.objects.annotate(blog_count=Count('blog'))
-    2)blog_types = BlogType.objects.all()
-    blog_type_list = []
-    for blog_type in blog_types:
-        blog_type.blog_count = Blog.objects.filter(blog_type=blog_type).count
-        blog_type_list.append(blog_type)
-    '''
     #获取日期归档对应的博客数量
     blog_dates = Blog.objects.dates('created_time', 'day', order='DESC')
     print(blog_dates)
@@ -71,13 +66,20 @@ def blog_detail(request, blog_pk):
     context = {}
     blog = get_object_or_404(Blog, pk=blog_pk)
     read_cookie_key = read_record_read(request, blog)
+    blog_content_type = ContentType.objects.get_for_model(blog)
+    comments = Comment.objects.filter(content_type=blog_content_type, object_id=blog.pk)
 
     context['previous_blog'] = Blog.objects.filter(created_time__gt=blog.created_time).last()
     context['next_blog'] = Blog.objects.filter(created_time__lt=blog.created_time).first()
     context['blog'] = blog
+    context['comments'] = comments
+    data = {}
+    data['content_type'] = blog_content_type
+    data['object_id'] = blog_pk
+    context['comment_form'] = CommentForm(initial=data)
 
-    response= render_to_response('blog/blog_detail.html', context)
-
+    response= render(request, 'blog/blog_detail.html', context)
+    #设置cookie (一分钟过期)
     response.set_cookie(read_cookie_key, 'true', max_age=60*1)
 
     return response

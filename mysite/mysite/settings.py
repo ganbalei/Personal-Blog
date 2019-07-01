@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'blog',
     'read_record',
+    'comment',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,11 @@ CKEDITOR_IMAGE_BACKEND = 'pillow'
 
 #设置每页博客数量
 EACH_PAGE_BLOG_NUMBER = 7
+
+#数据库缓存
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    }
+}

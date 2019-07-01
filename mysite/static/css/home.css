@@ -17,3 +17,7 @@ div#container{
 ul{
     list-style-type: none;
 }
+div.hot-data{
+    text-align: center;
+    margin-top: 2em;
+}

@@ -37,3 +37,19 @@ div.blog-more{
 ul{
     list-style-type: none;
 }
+div.comment{
+    margin-top: 2em;
+    padding-bottom: 0.4em;
+    border: 1px ;
+}
+div.comment-area{
+    margin-top: 2em;
+    padding-bottom: 0.4em;
+}
+h3.comment-area-title{
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 0.4em;
+}
+div.django-ckeditor-widget{
+    width:100%;
+}
