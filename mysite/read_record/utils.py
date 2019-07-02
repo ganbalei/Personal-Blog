@@ -8,7 +8,7 @@ def read_record_read(request, obj):
     ct = ContentType.objects.get_for_model(obj)
     key = "%s_%s_read" % (ct.model, obj.pk)
 
-    if not request.COOKIES.get('blog_%s_read' % obj.pk):
+    if not request.COOKIES.get(key):
 
         #总计数+1
         readnum, created = ReadNum.objects.get_or_create(content_type=ct, object_id=obj.pk)
