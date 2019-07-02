@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'blog',
     'read_record',
     'comment',
+    'likes',
 ]
 
 MIDDLEWARE = [
@@ -136,6 +137,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 #配置ckeditor
 CKEDITOR_UPLOAD_PATH = 'upload/'
 CKEDITOR_IMAGE_BACKEND = 'pillow'
+
+# ckeditor
+
 
 #设置每页博客数量
 EACH_PAGE_BLOG_NUMBER = 7

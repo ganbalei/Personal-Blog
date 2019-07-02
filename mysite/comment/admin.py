@@ -4,5 +4,5 @@ from .models import *
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['content_object','text', 'comment_time', 'user']
-    list_display_links = ['content_object','text', 'comment_time', 'user']
+    list_display = ['id', 'content_object', 'object_id', 'text', 'comment_time', 'user', 'root', 'parent']
+    list_display_links = ['id', 'content_object', 'object_id', 'text', 'comment_time', 'user', 'root', 'parent']
