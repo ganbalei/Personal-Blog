@@ -6,6 +6,7 @@ from .forms import CommentForm
 from django.http import JsonResponse
 # Create your views here.
 
+#更新评论区
 def update_comment(request):
 
     referer = request.META.get('HTTP_REFERER', reverse('home'))
@@ -17,7 +18,7 @@ def update_comment(request):
         comment.user = comment_form.cleaned_data['user']
         comment.text = comment_form.cleaned_data['text']
         comment.content_object = comment_form.cleaned_data['content_object']
-
+        #判断是否是回复他人的消息
         parent = comment_form.cleaned_data['parent']
         if parent:
             comment.root = parent.root if parent.root else parent
@@ -27,10 +28,11 @@ def update_comment(request):
 
         #返回数据
         data['status'] = 'SUCCESS'
-        data['username'] = comment.user.username
+        data['username'] = comment.user.get_nickname_or_username()
         data['comment_time'] = comment.comment_time.strftime('%Y-%m-%d %H:%M:%S')
         data['text'] = comment.text
-        data['reply_to'] = comment.reply_to.username if parent else ''
+        data['content_type'] = ContentType.objects.get_for_model(comment).model
+        data['reply_to'] = comment.reply_to.get_nickname_or_username() if parent else ''
         data['pk'] = comment.pk
         data['root_pk'] = comment.root.pk if comment.root else ''
 

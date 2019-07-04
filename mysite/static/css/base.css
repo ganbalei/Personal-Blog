@@ -5,3 +5,10 @@
 body{
     margin: 50px!important;
 }
+ul{
+    list-style-type: none!important;
+}
+ul.navbar-right{
+    margin-right: 0;
+
+}

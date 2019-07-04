@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'read_record',
     'comment',
     'likes',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -151,3 +152,12 @@ CACHES = {
         'LOCATION': 'my_cache_table',
     }
 }
+
+#发送邮件设置
+EMAIL_BACKED = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = '2318609384@qq.com'
+EMAIL_HOST_PASSWORD = 'afprnxtjihufeajh'#授权码
+EMAIL_SUBJECT_PREFIX = '[赖斌的博客]'
+EMAIL_USE_TLS = True #与SMTP服务器通信时，是否启动TLS链接（安全链接）

@@ -57,7 +57,7 @@
                     {% if user.is_authenticated %}
                         <form id="comment_form" action="{% url 'update_comment' %}" method="post" style="overflow: hidden">
                             {% csrf_token %}
-                            <label>{{ user.username }},欢迎评论</label>
+                            <label>{{ user.get_nickname_or_username }},欢迎评论</label>
                             <div id="reply_content_container" style="display: none">
                                 <p id="reply_title">回复：</p>
                                 <div id="reply_content"></div>
@@ -87,7 +87,7 @@
                         {% get_comment_list blog as comments %}
                         {% for comment in comments %}
                         <div id="root_{{comment_pk}}" class="comments">
-                            <span>{{ comment.user.username }}</span>
+                            <span>{{ comment.user.get_nickname_or_username }}</span>
                             <span>({{ comment.comment_time }}):</span>
                             <div id="comment_{{comment.pk}}">
                                 {{ comment.text|safe }}
@@ -101,10 +101,10 @@
 
                             {% for reply in comment.root_comment.all %}
                             <div class="reply">
-                                <span>{{reply.user.username}}</span>
+                                <span>{{reply.user.get_nickname_or_username}}</span>
                                 <span>({{reply.comment_time}})</span>
                                 <span>回复</span>
-                                <span>{{reply.reply_to.username}}:</span>
+                                <span>{{reply.reply_to.get_nickname_or_username}}:</span>
                                 <div id="comment_{{reply.pk}}">
                                     {{reply.text|safe}}
                                 </div>
@@ -124,11 +124,43 @@
                 </div>
             </div>
         </div>
+        <!-- Modal -->
+        <div class="modal fade" id="login_Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog model-sm" role="document">
+                <div class="modal-content">
+                    <form id="login_medal-form" action="" method="post">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" >登录</h4>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            {% for field in login_form %}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{field}}
+                            {% endfor %}
+                            <span id="login_Modal_tip" class="text-danger"></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">登录</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
 {% block script_extends %}
     <script type="text/javascript">
+        String.prototype.format = function(){
+            var str = this;
+            for (var i= 0; i<arguments.length; i++){
+                var str = str.replace(new RegExp('\\{' + i + '\\}', 'g'),arguments[i]);
+            };
+            return str;
+        }
         $("#comment_form").submit(function(){
             //提交后，清空错误信息
             $("#comment_error").text('');
@@ -148,16 +180,22 @@
                 success:function (data) {
                     console.log(data);
                     if (data['status']=='SUCCESS') {
-                        $("#no_comment").remove()
+                        $("#no_comment").remove();
                         //插入数据
                         if ($('#reply_comment_id').val()=='0'){
                             //插入评论
-                            var comment_html ='<div id="root_' + data['pk']+'"class="comments"> <span>' + data['username'] + '</span> <span>('+ data['comment_time'] +'):</span> <div id="comment_'+ data['pk']+'">' + data['text'] + ' </div> <a href="javascript:reply('+ data['pk']+');"> 回复 </a> </div>';
+
+                            var comment_html = '<div id="root_{0}" class="comments"> <span>{1}</span> <span>({2}):</span> <div id="comment_{0}"> {3} </div> <div class="like" onclick="likeChange(this, \'{4}\', {0})"><span class="glyphicon glyphicon-thumbs-up"></span> <span class="like-num">0</span> </div> <a href="javascript:reply({0});">回复</a></span>';
+                            comment_html = comment_html.format(data['pk'], data['username'], data['comment_time'], data['text'], data['content_type']);
+
                             $("#comment_list").prepend(comment_html);
                         } else {
                             //插入回复
-                            var reply_html = '<div class="reply"><span>' + data['username'] + '</span> <span>('+ data['comment_time'] +')</span> <span> 回复 </span> <span>'+ data['reply_to']+':</span> <div id="comment_'+ data['pk']+'"> ' + data['text'] + '</div> <a href="javascript:reply('+ data['pk']+');"> 回复 </a> </div>';
-                            $("#root_" + data['root_pk']).prepend(reply_html);
+
+                            var reply_html ='<div class="reply"><span>{1}</span> <span>({2})</span> <span>回复</span> <span>{3}:</span> <div id="comment_{0}"> {4} </div><div class="like" onclick="likeChange(this, \'{5}\', {0})"><span class="glyphicon glyphicon-thumbs-up "></span> <span class="like-num">0</span> </div> <a href="javascript:reply({0});">回复</a> </div>';
+                            reply_html = reply_html.format(data['pk'], data['username'], data['comment_time'], data['reply_to'], data['text'], data['content_type']);
+
+                            $("#root_" + data['root_pk']).append(reply_html);
                         }
                         //清空编辑框内容
                         CKEDITOR.instances['id_text'].setData('');
@@ -213,7 +251,11 @@
                         var like_num = $(obj.getElementsByClassName('like-num'));
                         like_num.text(data['like_num']);
                     }else{
-                        alert(data['message']);
+                        if(data['code']==400){
+                            $('#login_Modal').modal('show');
+                        }else {
+                            alert(data['message']);
+                        }
                     }
                 },
                 error:function (xhr) {
@@ -221,5 +263,21 @@
                 }
             });
         }
+        $('#login_medal-form').submit(function (event) {
+            event.preventDefault();
+            $.ajax({
+                url:'{% url "login_for_medal" %}',
+                type:'POST',
+                data:$(this).serialize(),
+                cache:false,
+                success:function(data){
+                    if(data['status']=='SUCCESS'){
+                        window.location.reload();
+                    }else {
+                        $('#login_Modal_tip').text('用户名或密码不正确');
+                    }
+                }
+            });
+        })
     </script>
 {%endblock%}

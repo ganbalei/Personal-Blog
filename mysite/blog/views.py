@@ -1,12 +1,10 @@
-from django.shortcuts import render, get_object_or_404, render_to_response
+from django.shortcuts import render, get_object_or_404
 from .models import *
 from read_record.utils import read_record_read
-from comment.models import Comment
-from comment.forms import CommentForm
 from django.core.paginator import Paginator
-from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Count
+from user.forms import LoginForm
 # Create your views here.
 
 def get_blog_list_common_data(request, blogs):
@@ -35,14 +33,11 @@ def get_blog_list_common_data(request, blogs):
 
     #获取日期归档对应的博客数量
     blog_dates = Blog.objects.dates('created_time', 'day', order='DESC')
-    print(blog_dates)
     blog_dates_dict = {}
     for blog_date in blog_dates:
         blog_count = Blog.objects.filter(created_time__year=blog_date.year,
         created_time__month=blog_date.month, created_time__day=blog_date.day).count()
         blog_dates_dict[blog_date] = blog_count
-        print(blog_dates_dict)
-
 
     context = {}
     context['blogs'] = page_of_blogs.object_list
@@ -59,14 +54,14 @@ def blog_list(request):
     blogs = Blog.objects.all()
     context = get_blog_list_common_data(request, blogs)
 
-    return render_to_response('blog/blog_list.html', context)
+    return render(request, 'blog/blog_list.html', context)
 
 def blog_detail(request, blog_pk):
 
     context = {}
     blog = get_object_or_404(Blog, pk=blog_pk)
     read_cookie_key = read_record_read(request, blog)
-
+    context['login_form'] = LoginForm()
     context['previous_blog'] = Blog.objects.filter(created_time__gt=blog.created_time).last()
     context['next_blog'] = Blog.objects.filter(created_time__lt=blog.created_time).first()
     context['blog'] = blog
@@ -93,7 +88,7 @@ def blogs_type(request, blog_type_pk):
     blog_type = get_object_or_404(BlogType, pk=blog_type_pk)
     context['blog_type'] = blog_type
 
-    return render_to_response('blog/blog_type.html', context)
+    return render(request, 'blog/blog_type.html', context)
 
 def blog_date(request, year, month, day):
 
@@ -101,4 +96,4 @@ def blog_date(request, year, month, day):
     context = get_blog_list_common_data(request, blog_list)
     context['blog_with_date'] = '%s-%s-%s'%(year, month, day)
 
-    return render_to_response('blog/blog_date.html', context)
+    return render(request, 'blog/blog_date.html', context)

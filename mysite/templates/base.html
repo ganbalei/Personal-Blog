@@ -18,7 +18,7 @@
     {% block header_extends %}{% endblock %}
 </head>
 <body>
-    <div class="navbar navbar-defalut navbar-fixed-top"  role="navigation">
+    <nav class="navbar navbar-defalut navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="{% url 'home' %}">个人博客网站</a>
@@ -38,16 +38,36 @@
                         <a href="{% url 'blog:blog_list' %}">博客</a>
                     </li>
                 </ul>
+
+                <ul class="nav navbar-nav navbar-right ">
+                    {% if not user.is_authenticated %}
+                        <li>
+                            <a href="{% url 'login' %}?from={{ request.get_full_path }}">登录</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'register' %}?from={{ request.get_full_path }}">注册</a>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                                {{user.get_nickname_or_username}}
+                                <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'user_info' %}">个人信息</a></li>
+                                {% if user.is_staff or user.is_superuser %}
+                                    <li><a href="{% url 'admin:index' %}">后台管理</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'logout' %}?from={{ request.get_full_path }">退出</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
-
         </div>
-    </div>
-
+    </nav>
     {% block content %}
     {% endblock %}
     {% block script_extends %}
     {% endblock %}
-
-
 </body>
 </html>
