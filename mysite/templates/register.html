@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-{% block nav_blog_active %}active{% endblock %}
-
-{% block title %}我的网站 | 注册 {% endblock %}
-            <div class="col-md-4 col-md-offset-4">
-                            {% csrf_token %}
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{field}}
