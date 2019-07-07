@@ -1,4 +1,3 @@
-from django.shortcuts import render,redirect
 from .models import *
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
