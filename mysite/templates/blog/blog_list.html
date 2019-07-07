@@ -20,10 +20,10 @@
                     <div class="panel-body">
                         {% for blog in blogs %}
                             <div class="blog">
-                                <h3><a href="{% url 'blog:blog_detail' blog.pk %}">{{blog.title}}</a></h3>
+                                <h3><a href="{% url 'blog_detail' blog.pk %}">{{blog.title}}</a></h3>
                                 <p class="blog-info">
                                     <span class="glyphicon glyphicon-tag"></span>
-                                    <a href="{% url 'blog:blog_type' blog.blog_type.pk %}">{{blog.blog_type}}</a>
+                                    <a href="{% url 'blog_type' blog.blog_type.pk %}">{{blog.blog_type}}</a>
                                     &nbsp;&nbsp;
                                     <span class="glyphicon glyphicon-time"></span>
                                     {{blog.created_time}}&nbsp;&nbsp;
@@ -95,7 +95,7 @@
                         <ul class="blog-types">
                             {% for blog_type in blog_types %}
                                 <li>
-                                    <a href="{% url 'blog:blog_type' blog_type.pk %}">
+                                    <a href="{% url 'blog_type' blog_type.pk %}">
                                         {{blog_type.type_name}}({{blog_type.blog_count}})
                                     </a>
                                 </li>
@@ -109,7 +109,7 @@
                         <ul>
                             {% for blog_date, blog_count in blog_dates.items %}
                                 <li>
-                                    <a href="{% url 'blog:blog_date' blog_date.year blog_date.month blog_date.day %}">
+                                    <a href="{% url 'blog_date' blog_date.year blog_date.month blog_date.day %}">
                                         {{blog_date| date:'Y-m-d'}}({{blog_count}})
                                     </a>
                                 </li>

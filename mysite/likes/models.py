@@ -20,3 +20,4 @@ class LikeRecord(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     liked_time = models.DateTimeField(auto_now_add=True)
+
