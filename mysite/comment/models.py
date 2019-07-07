@@ -21,11 +21,7 @@ class Comment(models.Model):
     #回复谁
     reply_to = models.ForeignKey(User, related_name='replies', null=True, on_delete=models.CASCADE)
 
-    def get_url(self):
-        return self.content_object.get_url()
 
-    def get_user(self):
-        return self.user
 
     def __str__(self):
         return self.text

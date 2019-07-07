@@ -21,7 +21,7 @@
                     <li>阅读:{{blog.get_read_num}}</li>
                     <li>评论:{% get_comment_count blog %}</li>
                     <li>类型:
-                        <a href="{% url 'blog_type' blog.blog_type.pk %}">
+                        <a href="{% url 'blog:blog_type' blog.blog_type.pk %}">
                             {{blog.blog_type}}</a>
                     </li>
                 </ul>
@@ -35,14 +35,14 @@
                 <div class="blog-more">
                     <p>上一篇:
                         {% if previous_blog %}
-                            <a href="{% url 'blog_detail' previous_blog.pk %}">{{previous_blog.title}}</a>
+                            <a href="{% url 'blog:blog_detail' previous_blog.pk %}">{{previous_blog.title}}</a>
                         {% else%}
                             没有了
                         {% endif %}
                     </p>
                     <p>下一篇:
                         {% if next_blog %}
-                            <a href="{% url 'blog_detail' next_blog.pk %}">{{next_blog.title}}</a>
+                            <a href="{% url 'blog:blog_detail' next_blog.pk %}">{{next_blog.title}}</a>
                         {% else%}
                             没有了
                         {% endif %}
@@ -278,11 +278,6 @@
                     }
                 }
             });
-        });
-        if(window.location.hash){
-            $('html').animate({
-                scrollTop: $(window.location.hash).offset().top-60
-            }, 500);
-        }
+        })
     </script>
 {%endblock%}

@@ -39,13 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ckeditor',
     'ckeditor_uploader',
-    'notifications',
     'blog',
     'read_record',
     'comment',
     'likes',
     'user',
-    'my_notifications',
 ]
 
 MIDDLEWARE = [
@@ -163,6 +161,3 @@ EMAIL_HOST_USER = '2318609384@qq.com'
 EMAIL_HOST_PASSWORD = 'afprnxtjihufeajh'#授权码
 EMAIL_SUBJECT_PREFIX = '[赖斌的博客]'
 EMAIL_USE_TLS = True #与SMTP服务器通信时，是否启动TLS链接（安全链接）
-
-#django-notification-hq 设置
-DJANGO_NOTIFICATIONS_CONFIG = {'USE_JSONFIELD': True}
